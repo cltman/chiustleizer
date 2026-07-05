@@ -440,7 +440,7 @@
   <div id="keybed"><div id="keyboard"></div></div>
 
   <p id="hint">
-    KEYS: A S D F G H J K L = WHITE &middot; W E T Y U O P = BLACK &middot; Z / X = OCTAVE DOWN / UP.
+    KEYS: TAB Q W E R T Y U I O P [ ] \ = WHITE &middot; NUMBER ROW ABOVE = BLACK &middot; Z / X = OCTAVE DOWN / UP.
     VCA MODE: THE LFO WOBBLES THE VOLUME. VCF MODE: IT SWEEPS THE FILTER.
     ARP ON: HOLD A CHORD, IT PLAYS THE NOTES ONE AT A TIME.
   </p>
@@ -807,8 +807,9 @@ const keyboard = document.getElementById('keyboard');
 const keyElems = new Map(); // midi note -> element
 
 const KEY_LABELS = {
-  60:'A', 61:'W', 62:'S', 63:'E', 64:'D', 65:'F', 66:'T', 67:'G',
-  68:'Y', 69:'H', 70:'U', 71:'J', 72:'K', 73:'O', 74:'L', 75:'P', 76:';'
+  60:'TAB', 61:'~',  62:'Q', 63:'1', 64:'W', 65:'E', 66:'3', 67:'R',
+  68:'4',  69:'T',  70:'5', 71:'Y', 72:'U', 73:'7', 74:'I', 75:'8',
+  76:'O',  77:'P',  78:'0', 79:'[', 80:'-', 81:']', 82:'=', 83:'\\'
 };
 
 function isBlack(note) {
@@ -1011,18 +1012,25 @@ window.addEventListener('mouseup', () => releaseSource('mouse'));
 
 /* Computer-keyboard playing */
 
+// White keys: Tab + the Q row. Black keys: the number row above them.
+// Digits 2, 6 and 9 sit over the piano's E-F and B-C gaps, so they're silent.
 const CODE_TO_NOTE = {
-  KeyA: 60, KeyW: 61, KeyS: 62, KeyE: 63, KeyD: 64, KeyF: 65, KeyT: 66,
-  KeyG: 67, KeyY: 68, KeyH: 69, KeyU: 70, KeyJ: 71, KeyK: 72, KeyO: 73,
-  KeyL: 74, KeyP: 75, Semicolon: 76
+  Tab: 60, KeyQ: 62, KeyW: 64, KeyE: 65, KeyR: 67, KeyT: 69, KeyY: 71,
+  KeyU: 72, KeyI: 74, KeyO: 76, KeyP: 77, BracketLeft: 79, BracketRight: 81,
+  Backslash: 83,
+  Backquote: 61, Digit1: 63, Digit3: 66, Digit4: 68, Digit5: 70,
+  Digit7: 73, Digit8: 75, Digit0: 78, Minus: 80, Equal: 82
 };
 
 window.addEventListener('keydown', e => {
-  if (e.repeat) return; // holding a key down shouldn't retrigger the note
+  if (e.ctrlKey || e.altKey || e.metaKey) return; // leave browser shortcuts alone
   if (e.code === 'KeyZ') { octaveChange(-1); return; }
   if (e.code === 'KeyX') { octaveChange(1); return; }
   const note = CODE_TO_NOTE[e.code];
-  if (note !== undefined) pressSource('kb:' + e.code, note);
+  if (note !== undefined) {
+    e.preventDefault(); // Tab must play C, not jump focus around the page
+    if (!e.repeat) pressSource('kb:' + e.code, note);
+  }
 });
 
 window.addEventListener('keyup', e => {
