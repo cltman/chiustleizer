@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CHIUSTLEIZER</title>
+<style>
+  /* ============ THE WORKSHOP ============ */
+  body {
+    background: radial-gradient(ellipse at 50% 30%, #26261f, #131310 75%);
+    min-height: 100vh;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 34px 10px;
+  }
+
+  /* ============ THE METAL BOX ============ */
+  #unit {
+    position: relative;
+    width: fit-content;
+    padding: 24px 26px 20px;
+    border-radius: 8px;
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,.028) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(0deg, rgba(0,0,0,.02) 0 2px, transparent 2px 5px),
+      linear-gradient(160deg, #a9aca3 0%, #8f9289 48%, #797c74 100%);
+    border: 1px solid #4c4e48;
+    box-shadow:
+      inset 0 2px 2px rgba(255,255,255,.45),
+      inset 0 -3px 6px rgba(0,0,0,.28),
+      0 18px 44px rgba(0,0,0,.75);
+  }
+
+  /* corner screws */
+  .screw {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #e4e7de, #94978e 55%, #565951);
+    box-shadow: inset 0 -1px 2px rgba(0,0,0,.5), 0 1px 1px rgba(255,255,255,.3);
+  }
+  .screw::after {
+    content: '';
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    top: 6px;
+    height: 2px;
+    background: #3a3c36;
+    border-radius: 1px;
+    transform: rotate(-24deg);
+  }
+  .screw.tl { top: 9px;    left: 9px; }
+  .screw.tr { top: 9px;    right: 9px; }
+  .screw.bl { bottom: 9px; left: 9px; }
+  .screw.br { bottom: 9px; right: 9px; transform: rotate(40deg); }
+
+  /* ============ DYMO EMBOSSED TAPE LABELS ============ */
+  .dymo {
+    display: inline-block;
+    background: linear-gradient(180deg, #1d1d1c, #0e0e0d);
+    color: #f2f2ee;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 11px;
+    letter-spacing: 3px;
+    padding: 3px 10px;
+    border-radius: 2px;
+    text-shadow: 0 -1px 0 rgba(0,0,0,.9), 0 1px 1px rgba(255,255,255,.28);
+    box-shadow: 0 1px 2px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1);
+    white-space: nowrap;
+  }
+
+  /* ============ HEADER: BRAND + PROGRAM BANK ============ */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin: 4px 4px 20px;
+  }
+  #brand h1 {
+    margin: 0 0 7px;
+    font-family: Impact, 'Arial Black', sans-serif;
+    font-size: 34px;
+    letter-spacing: 9px;
+    color: #2c2e29;
+    text-shadow: 0 1px 0 rgba(255,255,255,.45), 0 -1px 1px rgba(0,0,0,.4);
+  }
+  #program { text-align: right; }
+  #program select {
+    display: block;
+    margin: 7px 0 7px auto;
+    background: linear-gradient(180deg, #201f1d, #121110);
+    color: #ffb257;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 1px;
+    border: 1px solid #090908;
+    border-radius: 3px;
+    padding: 6px 8px;
+    max-width: 340px;
+    box-shadow: 0 2px 0 rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.07);
+  }
+  #presetHint { font-size: 10px; letter-spacing: 2px; }
+
+  /* ============ CONTROL BANKS (engraved group boxes) ============ */
+  .bank {
+    position: relative;
+    border: 1px solid #5a5c55;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, .05);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,.18), 0 1px 0 rgba(255,255,255,.3);
+    padding: 20px 18px 12px;
+    margin-bottom: 16px;
+  }
+  .bankLabel {
+    position: absolute;
+    top: -10px;
+    left: 14px;
+  }
+  .bankRow {
+    display: flex;
+    gap: 24px;
+    align-items: stretch;
+  }
+  .bankRow .bank { flex: 1; margin-bottom: 16px; }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 26px;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  .control label {
+    display: block;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 7px;
+    text-align: center;
+    color: #33352f;
+    text-shadow: 0 1px 0 rgba(255,255,255,.4);
+  }
+  .control.inactive { opacity: 0.35; pointer-events: none; }
+
+  /* ============ BAKELITE BUTTONS ============ */
+  #waves, #shapes, #modes, #octave, #arpToggle, #arpPatterns { display: flex; gap: 6px; }
+  #octave { align-items: center; }
+  #octVal {
+    min-width: 30px;
+    text-align: center;
+    color: #2e2f2b;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 0 1px 0 rgba(255,255,255,.4);
+  }
+  button {
+    background: linear-gradient(180deg, #2f2f2d, #161614);
+    color: #cfcabb;
+    border: 1px solid #0b0b0a;
+    border-radius: 3px;
+    padding: 7px 12px;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.09);
+  }
+  button:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,.45); }
+  button.on {
+    background: linear-gradient(180deg, #46280f, #331c0a);
+    color: #ffb257;
+    border-color: #5c3517;
+    text-shadow: 0 0 5px #ff8c2a;
+    box-shadow: inset 0 0 8px rgba(255, 122, 26, .55), 0 0 6px rgba(255, 122, 26, .3);
+  }
+
+  /* ============ FADERS ============ */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 130px;
+    height: 26px;
+    background: transparent;
+    cursor: pointer;
+  }
+  #level { width: 150px; }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 8px;
+    background: linear-gradient(180deg, #0e0e0d, #2b2b28);
+    border: 1px solid #090908;
+    border-radius: 4px;
+    box-shadow: 0 1px 0 rgba(255,255,255,.3);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 17px;
+    height: 26px;
+    margin-top: -10px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #c3c6bd 0 6px, #43453f 6px 11px, #c3c6bd 11px);
+    border: 1px solid #23241f;
+    box-shadow: 0 2px 4px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.5);
+  }
+  input[type="range"]::-moz-range-track {
+    height: 8px;
+    background: linear-gradient(180deg, #0e0e0d, #2b2b28);
+    border: 1px solid #090908;
+    border-radius: 4px;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 17px;
+    height: 26px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #c3c6bd 0 6px, #43453f 6px 11px, #c3c6bd 11px);
+    border: 1px solid #23241f;
+  }
+
+  /* readouts, like little amber bulbs behind glass */
+  #speedVal, #freqVal, #rateVal {
+    color: #b35d17;
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 0;
+    text-shadow: none;
+  }
+
+  /* ============ THE LFO LAMP ============ */
+  #ledSocket {
+    width: 24px;
+    height: 24px;
+    margin: 2px auto 6px;
+    border-radius: 50%;
+    background: #17110c;
+    border: 2px solid #43453f;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #led {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 32%, #ffc09b, #f4551b 55%, #8e2000);
+    box-shadow: 0 0 12px 4px rgba(255, 79, 31, .8);
+    opacity: 0.15; /* dim until the engine powers on */
+  }
+
+  /* ============ KEYBED ============ */
+  #keybed {
+    background: linear-gradient(180deg, #23241f, #191a16);
+    border-top: 5px solid #6e1d1d; /* the red felt strip */
+    border-radius: 3px;
+    padding: 10px 10px 13px;
+    box-shadow: inset 0 3px 8px rgba(0,0,0,.6);
+  }
+  #keyboard {
+    position: relative;
+    height: 170px;
+    user-select: none;
+    touch-action: none;
+  }
+  .key {
+    position: absolute;
+    top: 0;
+    border: 1px solid #15150f;
+    border-radius: 0 0 3px 3px;
+    box-sizing: border-box;
+    cursor: pointer;
+  }
+  .key.white {
+    width: 46px;
+    height: 170px;
+    background: linear-gradient(180deg, #f0ead9 0%, #e6dfc9 80%, #d6cdb2 100%);
+    box-shadow: inset -1px 0 0 rgba(0,0,0,.08), inset 0 -3px 3px rgba(0,0,0,.12);
+  }
+  .key.black {
+    width: 28px;
+    height: 105px;
+    background: linear-gradient(180deg, #262620, #101009 85%);
+    box-shadow: inset 0 -3px 2px rgba(255,255,255,.06);
+    z-index: 2;
+  }
+  .key.white.down { background: #dd9440; }
+  .key.black.down { background: #b06a1e; }
+  .key .tag {
+    position: absolute;
+    bottom: 6px;
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    color: #8d8672;
+    pointer-events: none;
+  }
+  .key.black .tag { color: #6d6758; }
+
+  /* ============ FOOTNOTES ============ */
+  #hint {
+    margin: 14px 4px 0;
+    font-size: 10.5px;
+    letter-spacing: .4px;
+    color: #3c3e38;
+    text-shadow: 0 1px 0 rgba(255,255,255,.3);
+    text-align: center;
+    max-width: 720px;
+  }
+  #plate {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #4a4c45;
+    text-shadow: 0 1px 0 rgba(255,255,255,.3);
+  }
+</style>
+</head>
+<body>
+<div id="unit">
+  <div class="screw tl"></div><div class="screw tr"></div>
+  <div class="screw bl"></div><div class="screw br"></div>
+
+  <header>
+    <div id="brand">
+      <h1>CHIUSTLEIZER</h1>
+      <span class="dymo">INDUSTRIAL TONE UNIT &middot; HAND BUILT &middot; 1977</span>
+    </div>
+    <div id="program">
+      <span class="dymo">PROGRAM</span>
+      <select id="presetSel"></select>
+      <span class="dymo" id="presetHint">SELECT A PROGRAM</span>
+    </div>
+  </header>
+
+  <section class="bank">
+    <span class="dymo bankLabel">VOICE</span>
+    <div class="controls">
+      <div class="control">
+        <label>WAVE</label>
+        <div id="waves">
+          <button data-wave="sine">SINE</button>
+          <button data-wave="triangle">TRI</button>
+          <button data-wave="square">SQUARE</button>
+          <button data-wave="sawtooth" class="on">SAW</button>
+        </div>
+      </div>
+      <div class="control">
+        <label>OCTAVE</label>
+        <div id="octave">
+          <button id="octDown">&minus;</button>
+          <span id="octVal">0</span>
+          <button id="octUp">+</button>
+        </div>
+      </div>
+      <div class="control">
+        <label>LEVEL</label>
+        <input type="range" id="level" min="0" max="100" value="60">
+      </div>
+    </div>
+  </section>
+
+  <section class="bank">
+    <span class="dymo bankLabel">GRISTLEIZER</span>
+    <div class="controls">
+      <div class="control">
+        <label>MODE</label>
+        <div id="modes">
+          <button data-mode="vca" class="on">VCA</button>
+          <button data-mode="vcf">VCF</button>
+        </div>
+      </div>
+      <div class="control">
+        <label>LFO SHAPE</label>
+        <div id="shapes">
+          <button data-shape="square">SQUARE</button>
+          <button data-shape="triangle" class="on">TRI</button>
+          <button data-shape="rampup">RAMP UP</button>
+          <button data-shape="rampdown">RAMP DN</button>
+        </div>
+      </div>
+      <div class="control">
+        <label>SPEED <span id="speedVal"></span></label>
+        <input type="range" id="speed" min="0" max="100" value="56">
+      </div>
+      <div class="control">
+        <label>LFO</label>
+        <div id="ledSocket"><div id="led"></div></div>
+      </div>
+      <div class="control">
+        <label>DEPTH</label>
+        <input type="range" id="depth" min="0" max="100" value="50">
+      </div>
+      <div class="control" id="ctlBias">
+        <label>BIAS</label>
+        <input type="range" id="bias" min="0" max="100" value="60">
+      </div>
+      <div class="control" id="ctlFreq">
+        <label>FREQ <span id="freqVal"></span></label>
+        <input type="range" id="freq" min="0" max="100" value="55">
+      </div>
+      <div class="control" id="ctlReso">
+        <label>RESO</label>
+        <input type="range" id="reso" min="0" max="100" value="55">
+      </div>
+      <div class="control">
+        <label>GAIN</label>
+        <input type="range" id="gain" min="0" max="100" value="12">
+      </div>
+    </div>
+  </section>
+
+  <section class="bank">
+    <span class="dymo bankLabel">PERFORMANCE</span>
+    <div class="controls">
+      <div class="control">
+        <label>ARP</label>
+        <div id="arpToggle"><button id="arpBtn">OFF</button></div>
+      </div>
+      <div class="control" id="ctlArpPat">
+        <label>PATTERN</label>
+        <div id="arpPatterns">
+          <button data-pat="up" class="on">UP</button>
+          <button data-pat="down">DOWN</button>
+          <button data-pat="updown">UP-DN</button>
+          <button data-pat="random">RND</button>
+        </div>
+      </div>
+      <div class="control" id="ctlArpRate">
+        <label>RATE <span id="rateVal"></span></label>
+        <input type="range" id="arpRate" min="0" max="100" value="60">
+      </div>
+    </div>
+  </section>
+
+  <div id="keybed"><div id="keyboard"></div></div>
+
+  <p id="hint">
+    KEYS: A S D F G H J K L = WHITE &middot; W E T Y U O P = BLACK &middot; Z / X = OCTAVE DOWN / UP.
+    VCA MODE: THE LFO WOBBLES THE VOLUME. VCF MODE: IT SWEEPS THE FILTER.
+    ARP ON: HOLD A CHORD, IT PLAYS THE NOTES ONE AT A TIME.
+  </p>
+  <div id="plate">DERIVED FROM R. GWINN'S G.E.P. CIRCUIT &middot; PRACTICAL ELECTRONICS, JULY 1975 &middot; GRISTLEIZED BY C. CARTER 1977</div>
+</div>
+
+<script>
+'use strict';
+
+/* ---------- Audio engine ---------- */
+
+// The browser only allows sound after the user has clicked or pressed a key,
+// so the AudioContext is created lazily on the first note.
+let ctx = null;
+let master = null;
+
+// Gristleizer nodes
+let vca = null;        // the volume the LFO wiggles: gain = BIAS + DEPTH x LFO
+let lfo = null;
+let lfoInvert = null;  // set to -1 to turn ramp-up into ramp-down
+let lfoDepth = null;
+let lfoAnalyser = null;
+let lfoShape = 'triangle';
+
+// Drive stage, bandpass filter, and the VCA/VCF mode switch
+let mode = 'vca';
+let driveIn = null;        // pushes the signal into the clipping curve
+let shaper = null;         // the clipping curve itself (the "fuzz")
+let drivePost = null;      // brings the level back down after clipping
+let filter = null;         // bandpass filter for VCF mode
+let peak = null;           // resonant boost at the filter's center — the scream
+let vcfSat = null;         // saturator after the filter, catches the screaming peak
+let filterModScale = null; // converts LFO (-1..1) into a sweep in Hz
+let vcaSwitch = null;      // these two mute whichever path is not selected
+let vcfSwitch = null;
+
+const levelSlider = document.getElementById('level');
+const speedSlider = document.getElementById('speed');
+const depthSlider = document.getElementById('depth');
+const biasSlider  = document.getElementById('bias');
+const gainSlider  = document.getElementById('gain');
+const freqSlider  = document.getElementById('freq');
+const resoSlider  = document.getElementById('reso');
+const speedVal    = document.getElementById('speedVal');
+const freqVal     = document.getElementById('freqVal');
+const led         = document.getElementById('led');
+
+function ensureAudio() {
+  if (!ctx) {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    master = ctx.createGain();
+    master.gain.value = levelToGain(levelSlider.value);
+    master.connect(ctx.destination);
+
+    // Drive stage: every voice goes in here first. GAIN pushes the signal
+    // into a soft-clipping curve, drivePost levels it back out.
+    driveIn = ctx.createGain();
+    driveIn.gain.value = driveAmount();
+    shaper = ctx.createWaveShaper();
+    shaper.curve = makeDriveCurve();
+    shaper.oversample = '4x';
+    drivePost = ctx.createGain();
+    drivePost.gain.value = drivePostGain();
+    driveIn.connect(shaper);
+    shaper.connect(drivePost);
+
+    // VCA path. The VCA's gain sits at BIAS, and the LFO adds/subtracts
+    // DEPTH on top. When gain swings below zero the signal flips phase —
+    // that is what makes the maxed-out settings ring-modulate, not just chop.
+    vca = ctx.createGain();
+    vca.gain.value = biasValue();
+    vcaSwitch = ctx.createGain();
+    vcaSwitch.gain.value = (mode === 'vca') ? 1 : 0;
+    drivePost.connect(vca);
+    vca.connect(vcaSwitch);
+    vcaSwitch.connect(master);
+
+    // VCF path: bandpass -> resonant peak boost -> saturator.
+    // RESO cranks the peak up to +24 dB; the saturator clips that boost
+    // like the real circuit overloading — that's where the scream lives.
+    filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = freqHz();
+    filter.Q.value = resoBpQ();
+    peak = ctx.createBiquadFilter();
+    peak.type = 'peaking';
+    peak.frequency.value = freqHz();
+    peak.Q.value = resoPeakQ();
+    peak.gain.value = resoBoostDb();
+    vcfSat = ctx.createWaveShaper();
+    vcfSat.curve = makeSatCurve();
+    vcfSat.oversample = '2x';
+    vcfSwitch = ctx.createGain();
+    vcfSwitch.gain.value = (mode === 'vcf') ? 1 : 0;
+    drivePost.connect(filter);
+    filter.connect(peak);
+    peak.connect(vcfSat);
+    vcfSat.connect(vcfSwitch);
+    vcfSwitch.connect(master);
+
+    lfoInvert = ctx.createGain();
+    lfoDepth = ctx.createGain();
+    lfoDepth.gain.value = depthValue();
+    lfoInvert.connect(lfoDepth);
+
+    // The LFO drives both targets at once; the mode switch decides
+    // which path you actually hear.
+    lfoDepth.connect(vca.gain);
+    filterModScale = ctx.createGain();
+    filterModScale.gain.value = 0.9 * freqHz();
+    lfoDepth.connect(filterModScale);
+    filterModScale.connect(filter.frequency);
+    filterModScale.connect(peak.frequency); // the scream peak sweeps along too
+
+    // The analyser lets the LED watch the LFO without affecting the sound
+    lfoAnalyser = ctx.createAnalyser();
+    lfoAnalyser.fftSize = 32;
+    lfoInvert.connect(lfoAnalyser);
+
+    lfo = ctx.createOscillator();
+    lfo.frequency.value = speedHz();
+    lfo.connect(lfoInvert);
+    applyLfoShape();
+    lfo.start();
+
+    requestAnimationFrame(ledTick);
+  }
+  if (ctx.state === 'suspended') ctx.resume();
+}
+
+/* ---------- Gristleizer controls ---------- */
+
+function speedHz() {
+  // 0..100 slider -> 0.05 Hz (one cycle per 20 s) up to 120 Hz (audio rate),
+  // exponential so the low end has fine control like a real pot
+  return 0.05 * Math.pow(2400, speedSlider.value / 100);
+}
+function depthValue() { return depthSlider.value / 100; }
+function biasValue()  { return biasSlider.value / 100; }
+
+// GAIN 0..100 -> input boost of 1x..12x. The real crunch comes from the
+// curve itself, which gets progressively nastier as GAIN rises (see below)
+function driveAmount()   { return Math.pow(12, gainSlider.value / 100); }
+// Light level compensation so the fuzz gets fiercer, not just louder
+function drivePostGain() { return 1 / Math.pow(driveAmount(), 0.25); }
+
+// FREQ 0..100 -> 80 Hz..5000 Hz, exponential like a real filter knob
+function freqHz() { return 80 * Math.pow(62.5, freqSlider.value / 100); }
+
+// RESO shapes three things at once:
+// the bandpass narrows (0.5..8), the peak sharpens (1..12),
+// and the peak BOOSTS up to +24 dB — which then slams into the saturator
+function resoBpQ()     { return 0.5 * Math.pow(16, resoSlider.value / 100); }
+function resoPeakQ()   { return 1 + (resoSlider.value / 100) * 11; }
+function resoBoostDb() { return (resoSlider.value / 100) * 24; }
+
+// The clipping curve itself morphs with the GAIN knob:
+//   low GAIN  -> soft tanh clipping (warm, round, subtle grit)
+//   high GAIN -> asymmetric WAVEFOLDER: instead of flattening the wave's
+//   tops it folds them back on themselves, mangling any waveform (even a
+//   saw) into torn, metallic, broken-machine textures
+function makeDriveCurve() {
+  const f = gainSlider.value / 100; // 0 = polite, 1 = mangled
+  const n = 2048;
+  const curve = new Float32Array(n);
+  const foldFreq = (0.5 + 2.8 * f) * Math.PI;
+  for (let i = 0; i < n; i++) {
+    const x = (i / (n - 1)) * 2 - 1;
+    // asymmetry: pushes the curve off-center, adding even harmonics ("tear")
+    const asym = x + 0.25 * f * (1 - x * x);
+    const clipped = Math.tanh(2.5 * asym) / Math.tanh(2.5);
+    const folded = Math.sin(foldFreq * asym);
+    curve[i] = (1 - f) * clipped + f * folded;
+  }
+  return curve;
+}
+
+// Gentler clipper for after the filter — tames the +24 dB scream peak
+function makeSatCurve() {
+  const n = 1024;
+  const curve = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = (i / (n - 1)) * 2 - 1;
+    curve[i] = Math.tanh(1.5 * x) / Math.tanh(1.5);
+  }
+  return curve;
+}
+
+function levelToGain(level) {
+  // 0..100 slider -> 0..0.6 gain, curved so the low end is usable
+  const x = level / 100;
+  return 0.6 * x * x;
+}
+
+levelSlider.addEventListener('input', () => {
+  if (master) master.gain.value = levelToGain(levelSlider.value);
+});
+
+function applyLfoShape() {
+  if (!lfo) return;
+  if (lfoShape === 'rampup')        { lfo.type = 'sawtooth'; lfoInvert.gain.value = 1; }
+  else if (lfoShape === 'rampdown') { lfo.type = 'sawtooth'; lfoInvert.gain.value = -1; }
+  else                              { lfo.type = lfoShape;   lfoInvert.gain.value = 1; }
+}
+
+document.querySelectorAll('#shapes button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    lfoShape = btn.dataset.shape;
+    document.querySelectorAll('#shapes button').forEach(b => b.classList.toggle('on', b === btn));
+    applyLfoShape();
+  });
+});
+
+function updateSpeedReadout() {
+  const hz = speedHz();
+  speedVal.textContent = hz < 1 ? hz.toFixed(2) + ' Hz'
+                       : hz < 10 ? hz.toFixed(1) + ' Hz'
+                       : Math.round(hz) + ' Hz';
+}
+updateSpeedReadout();
+
+speedSlider.addEventListener('input', () => {
+  updateSpeedReadout();
+  if (lfo) lfo.frequency.setTargetAtTime(speedHz(), ctx.currentTime, 0.05);
+});
+depthSlider.addEventListener('input', () => {
+  if (lfoDepth) lfoDepth.gain.setTargetAtTime(depthValue(), ctx.currentTime, 0.02);
+});
+biasSlider.addEventListener('input', () => {
+  if (vca) vca.gain.setTargetAtTime(biasValue(), ctx.currentTime, 0.02);
+});
+
+gainSlider.addEventListener('input', () => {
+  if (driveIn) {
+    driveIn.gain.setTargetAtTime(driveAmount(), ctx.currentTime, 0.02);
+    drivePost.gain.setTargetAtTime(drivePostGain(), ctx.currentTime, 0.02);
+    shaper.curve = makeDriveCurve(); // the curve itself changes with GAIN
+  }
+});
+
+function updateFreqReadout() {
+  const hz = freqHz();
+  freqVal.textContent = hz < 1000 ? Math.round(hz) + ' Hz' : (hz / 1000).toFixed(1) + ' kHz';
+}
+updateFreqReadout();
+
+freqSlider.addEventListener('input', () => {
+  updateFreqReadout();
+  if (filter) {
+    filter.frequency.setTargetAtTime(freqHz(), ctx.currentTime, 0.02);
+    peak.frequency.setTargetAtTime(freqHz(), ctx.currentTime, 0.02);
+    filterModScale.gain.setTargetAtTime(0.9 * freqHz(), ctx.currentTime, 0.02);
+  }
+});
+
+resoSlider.addEventListener('input', () => {
+  if (filter) {
+    filter.Q.setTargetAtTime(resoBpQ(), ctx.currentTime, 0.02);
+    peak.Q.setTargetAtTime(resoPeakQ(), ctx.currentTime, 0.02);
+    peak.gain.setTargetAtTime(resoBoostDb(), ctx.currentTime, 0.02);
+  }
+});
+
+/* ---------- VCA / VCF mode switch ---------- */
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('#modes button').forEach(b =>
+    b.classList.toggle('on', b.dataset.mode === m));
+  // Dim the controls that do nothing in the current mode
+  document.getElementById('ctlBias').classList.toggle('inactive', m === 'vcf');
+  document.getElementById('ctlFreq').classList.toggle('inactive', m === 'vca');
+  document.getElementById('ctlReso').classList.toggle('inactive', m === 'vca');
+  if (ctx) {
+    // Quick crossfade between the two paths so switching doesn't pop
+    const t = ctx.currentTime;
+    vcaSwitch.gain.setTargetAtTime(m === 'vca' ? 1 : 0, t, 0.01);
+    vcfSwitch.gain.setTargetAtTime(m === 'vcf' ? 1 : 0, t, 0.01);
+  }
+}
+
+document.querySelectorAll('#modes button').forEach(btn => {
+  btn.addEventListener('click', () => setMode(btn.dataset.mode));
+});
+setMode('vca');
+
+/* The LED glows with the actual gain the LFO is producing right now */
+const ledBuf = new Float32Array(32);
+function ledTick() {
+  lfoAnalyser.getFloatTimeDomainData(ledBuf);
+  const g = biasValue() + ledBuf[0] * depthValue();
+  const bright = Math.max(0, Math.min(1, g));
+  led.style.opacity = (0.12 + 0.88 * bright).toFixed(3);
+  requestAnimationFrame(ledTick);
+}
+
+/* ---------- Voices (one per held note, polyphonic) ---------- */
+
+let waveform = 'sawtooth';
+const activeVoices = new Map(); // midi note -> { osc, gain }
+
+function midiToFreq(note) {
+  return 440 * Math.pow(2, (note - 69) / 12);
+}
+
+function noteOn(note) {
+  ensureAudio();
+  if (activeVoices.has(note)) return;
+
+  const osc = ctx.createOscillator();
+  osc.type = waveform;
+  osc.frequency.value = midiToFreq(note);
+
+  // Short fade-in/out on each note so it doesn't click
+  const gain = ctx.createGain();
+  const t = ctx.currentTime;
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(0.25, t + 0.01);
+
+  osc.connect(gain);
+  gain.connect(driveIn);
+  osc.start();
+
+  activeVoices.set(note, { osc, gain });
+}
+
+function noteOff(note) {
+  const v = activeVoices.get(note);
+  if (!v) return;
+  activeVoices.delete(note);
+
+  const t = ctx.currentTime;
+  v.gain.gain.cancelScheduledValues(t);
+  v.gain.gain.setValueAtTime(v.gain.gain.value, t);
+  v.gain.gain.linearRampToValueAtTime(0, t + 0.06);
+  v.osc.stop(t + 0.08);
+}
+
+function allNotesOff() {
+  for (const { base } of heldKeys.values()) setKeyVisual(base, false);
+  heldKeys.clear();
+  for (const note of [...activeVoices.keys()]) noteOff(note);
+}
+
+/* ---------- Wave selector ---------- */
+
+document.querySelectorAll('#waves button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    waveform = btn.dataset.wave;
+    document.querySelectorAll('#waves button').forEach(b => b.classList.toggle('on', b === btn));
+    // Change the sound of notes already being held too
+    for (const v of activeVoices.values()) v.osc.type = waveform;
+  });
+});
+
+/* ---------- On-screen keyboard (2 octaves from middle C) ---------- */
+
+const FIRST_NOTE = 60; // middle C (C4)
+const NUM_KEYS = 25;   // C4..C6
+const WHITE_W = 46;
+const BLACK_W = 28;
+
+const keyboard = document.getElementById('keyboard');
+const keyElems = new Map(); // midi note -> element
+
+const KEY_LABELS = {
+  60:'A', 61:'W', 62:'S', 63:'E', 64:'D', 65:'F', 66:'T', 67:'G',
+  68:'Y', 69:'H', 70:'U', 71:'J', 72:'K', 73:'O', 74:'L', 75:'P', 76:';'
+};
+
+function isBlack(note) {
+  return [1, 3, 6, 8, 10].includes(note % 12);
+}
+
+(function buildKeyboard() {
+  let whiteIndex = 0;
+  for (let i = 0; i < NUM_KEYS; i++) {
+    const note = FIRST_NOTE + i;
+    const el = document.createElement('div');
+    el.dataset.note = note;
+
+    if (isBlack(note)) {
+      el.className = 'key black';
+      el.style.left = (whiteIndex * WHITE_W - BLACK_W / 2) + 'px';
+    } else {
+      el.className = 'key white';
+      el.style.left = (whiteIndex * WHITE_W) + 'px';
+      whiteIndex++;
+    }
+
+    if (KEY_LABELS[note]) {
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.textContent = KEY_LABELS[note];
+      el.appendChild(tag);
+    }
+
+    keyboard.appendChild(el);
+    keyElems.set(note, el);
+  }
+  keyboard.style.width = (whiteIndex * WHITE_W) + 'px';
+})();
+
+function setKeyVisual(note, down) {
+  const el = keyElems.get(note);
+  if (el) el.classList.toggle('down', down);
+}
+
+function noteFromEvent(e) {
+  const el = e.target.closest('.key');
+  return el ? Number(el.dataset.note) : null;
+}
+
+/* ---------- Key routing (octave shift + arpeggiator aware) ----------
+   Every key press (mouse or computer keyboard) goes through here.
+   With the arp OFF, a press starts a sustained note.
+   With the arp ON, presses just mark the note as "held" and the
+   arp clock decides when it actually sounds. */
+
+let octaveShift = 0;         // -2..+2 octaves
+let arpOn = false;
+const heldKeys = new Map();  // sourceId -> { base, played }
+
+function pressSource(sourceId, baseNote) {
+  if (heldKeys.has(sourceId)) return;
+  const played = baseNote + octaveShift * 12;
+  heldKeys.set(sourceId, { base: baseNote, played });
+  setKeyVisual(baseNote, true);
+  if (arpOn) { ensureAudio(); return; }
+  noteOn(played);
+}
+
+function releaseSource(sourceId) {
+  const entry = heldKeys.get(sourceId);
+  if (!entry) return;
+  heldKeys.delete(sourceId);
+  setKeyVisual(entry.base, false);
+  if (!arpOn) {
+    // another finger might still be holding the same pitch
+    const stillHeld = [...heldKeys.values()].some(v => v.played === entry.played);
+    if (!stillHeld) noteOff(entry.played);
+  }
+}
+
+/* Octave shift */
+
+const octVal = document.getElementById('octVal');
+
+function setOctave(v) {
+  octaveShift = Math.max(-2, Math.min(2, v));
+  octVal.textContent = (octaveShift > 0 ? '+' : '') + octaveShift;
+}
+function octaveChange(d) { setOctave(octaveShift + d); }
+document.getElementById('octDown').addEventListener('click', () => octaveChange(-1));
+document.getElementById('octUp').addEventListener('click', () => octaveChange(1));
+
+/* ---------- Arpeggiator ---------- */
+
+let arpPattern = 'up';
+let arpTimer = null;
+let arpNextTime = 0;
+let arpStep = 0;
+
+const arpRateSlider = document.getElementById('arpRate');
+const rateVal = document.getElementById('rateVal');
+const arpBtn = document.getElementById('arpBtn');
+
+// RATE 0..100 -> 0.5..16 notes per second
+function arpRateHz() { return 0.5 * Math.pow(32, arpRateSlider.value / 100); }
+
+function updateRateReadout() { rateVal.textContent = arpRateHz().toFixed(1) + ' Hz'; }
+updateRateReadout();
+arpRateSlider.addEventListener('input', updateRateReadout);
+
+function setArp(on) {
+  arpOn = on;
+  arpBtn.textContent = on ? 'ON' : 'OFF';
+  arpBtn.classList.toggle('on', on);
+  document.getElementById('ctlArpPat').classList.toggle('inactive', !on);
+  document.getElementById('ctlArpRate').classList.toggle('inactive', !on);
+  if (on) {
+    ensureAudio();
+    // silence sustained voices — the clock takes over from here
+    for (const note of [...activeVoices.keys()]) noteOff(note);
+    arpStep = 0;
+    arpNextTime = ctx.currentTime + 0.05;
+    arpTimer = setInterval(arpScheduler, 25);
+  } else {
+    clearInterval(arpTimer);
+    arpTimer = null;
+    // resume sustained sound for keys still physically held
+    for (const { played } of heldKeys.values()) noteOn(played);
+  }
+}
+arpBtn.addEventListener('click', () => setArp(!arpOn));
+
+document.querySelectorAll('#arpPatterns button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    arpPattern = btn.dataset.pat;
+    document.querySelectorAll('#arpPatterns button').forEach(b =>
+      b.classList.toggle('on', b === btn));
+  });
+});
+setArp(false);
+
+// Runs every 25 ms but books notes ahead on the audio clock,
+// so the rhythm stays sample-accurate even if the page hiccups
+function arpScheduler() {
+  const interval = 1 / arpRateHz();
+  while (arpNextTime < ctx.currentTime + 0.12) {
+    const notes = [...new Set([...heldKeys.values()].map(v => v.played))].sort((a, b) => a - b);
+    if (notes.length) {
+      playArpNote(pickArpNote(notes), arpNextTime, Math.max(0.05, interval * 0.55));
+    }
+    arpNextTime += interval;
+  }
+}
+
+function pickArpNote(notes) {
+  const n = notes.length;
+  let i = 0;
+  if (arpPattern === 'random') i = Math.floor(Math.random() * n);
+  else if (arpPattern === 'up') i = arpStep % n;
+  else if (arpPattern === 'down') i = (n - 1) - (arpStep % n);
+  else { // up-down: 1 2 3 2 1 2 3 ... without repeating the turnaround note
+    const cycle = Math.max(1, 2 * n - 2);
+    const p = arpStep % cycle;
+    i = p < n ? p : cycle - p;
+  }
+  arpStep++;
+  return notes[i];
+}
+
+// A short self-contained voice, scheduled at an exact future time
+function playArpNote(note, time, dur) {
+  const osc = ctx.createOscillator();
+  osc.type = waveform;
+  osc.frequency.value = midiToFreq(note);
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0, time);
+  g.gain.linearRampToValueAtTime(0.25, time + 0.005);
+  g.gain.setValueAtTime(0.25, Math.max(time + 0.005, time + dur - 0.03));
+  g.gain.linearRampToValueAtTime(0, time + dur);
+  osc.connect(g);
+  g.connect(driveIn);
+  osc.start(time);
+  osc.stop(time + dur + 0.05);
+}
+
+/* Mouse playing — press a key, or hold the button and drag across keys */
+
+keyboard.addEventListener('mousedown', e => {
+  const note = noteFromEvent(e);
+  if (note !== null) pressSource('mouse', note);
+});
+
+keyboard.addEventListener('mouseover', e => {
+  if (!(e.buttons & 1)) return;
+  const note = noteFromEvent(e);
+  if (note === null) return;
+  const cur = heldKeys.get('mouse');
+  if (cur && cur.base === note) return;
+  releaseSource('mouse');
+  pressSource('mouse', note);
+});
+
+window.addEventListener('mouseup', () => releaseSource('mouse'));
+
+/* Computer-keyboard playing */
+
+const CODE_TO_NOTE = {
+  KeyA: 60, KeyW: 61, KeyS: 62, KeyE: 63, KeyD: 64, KeyF: 65, KeyT: 66,
+  KeyG: 67, KeyY: 68, KeyH: 69, KeyU: 70, KeyJ: 71, KeyK: 72, KeyO: 73,
+  KeyL: 74, KeyP: 75, Semicolon: 76
+};
+
+window.addEventListener('keydown', e => {
+  if (e.repeat) return; // holding a key down shouldn't retrigger the note
+  if (e.code === 'KeyZ') { octaveChange(-1); return; }
+  if (e.code === 'KeyX') { octaveChange(1); return; }
+  const note = CODE_TO_NOTE[e.code];
+  if (note !== undefined) pressSource('kb:' + e.code, note);
+});
+
+window.addEventListener('keyup', e => {
+  if (CODE_TO_NOTE[e.code] !== undefined) releaseSource('kb:' + e.code);
+});
+
+// If the window loses focus mid-note, release everything so nothing drones forever
+window.addEventListener('blur', allNotesOff);
+
+// Buttons shouldn't keep keyboard focus — the QWERTY keys belong to the synth
+document.addEventListener('click', e => {
+  if (e.target.tagName === 'BUTTON') e.target.blur();
+});
+
+/* ---------- THE PROGRAM BANK ----------
+   Every preset is a full snapshot of the panel. Anything a preset doesn't
+   mention falls back to PRESET_DEFAULT. Slider values are 0..100. */
+
+const PRESET_DEFAULT = {
+  mode: 'vca', wave: 'sawtooth', shape: 'triangle',
+  speed: 56, depth: 50, bias: 60, gain: 12, freq: 55, reso: 55,
+  arp: false, pat: 'up', rate: 60, oct: 0
+};
+
+const PRESETS = [
+  { g:'PANEL', n:'INIT — FLAT PANEL', h:'A CLEAN SLATE' },
+
+  /* From the user's research notes + Sound On Sound's Hamburger Lady feature */
+  { g:'THE ARCHIVE', n:'HAMBURGER LADY VOCAL FUZZ', h:'HOLD ONE MID NOTE, LET IT TEAR',
+    mode:'vcf', shape:'rampup', speed:62, depth:100, gain:65, freq:49, reso:70 },
+  { g:'THE ARCHIVE', n:'SUBTLE WARMTH + COMPRESSION', h:'CHORDS — CLIPS GENTLY LIKE WARM TAPE',
+    wave:'triangle', speed:38, depth:25, bias:70, gain:12 },
+  { g:'THE ARCHIVE', n:'RING MODULATOR / HARSH NOISE', h:'LOW NOTES GO METALLIC AND ALIEN',
+    shape:'square', speed:100, depth:100, bias:50, gain:70 },
+  { g:'THE ARCHIVE', n:'DUCK CALL 1978', h:'THE HAMBURGER LADY WHISTLE, ROUGHLY',
+    mode:'vcf', wave:'sine', shape:'square', speed:62, depth:60, freq:78, reso:60, gain:25, oct:2 },
+  { g:'THE ARCHIVE', n:'THE DRONE', h:'HOLD A LOW FIFTH FOREVER',
+    speed:9, depth:20, bias:70, gain:35, oct:-2 },
+  { g:'THE ARCHIVE', n:'DRUM BOX GATE', h:'CARTER GRISTLEIZED HIS DRUM MACHINE',
+    wave:'square', shape:'square', speed:65, depth:100, bias:45, gain:30, arp:true, pat:'up', rate:80, oct:-1 },
+
+  /* The warm ones */
+  { g:'WARMTH', n:'VALVE GLOW', h:'SOFT CHORDS, LATE NIGHT',
+    wave:'sine', speed:30, depth:15, bias:75, gain:18 },
+  { g:'WARMTH', n:'WARM THROB 120', h:'THE 2 HZ PULSE = 120 BPM',
+    wave:'triangle', speed:47, depth:35, bias:65, gain:12 },
+  { g:'WARMTH', n:'HEARTBEAT', h:'ONE LOW NOTE: LUB-DUB',
+    wave:'sine', shape:'rampdown', speed:41, depth:55, bias:60, gain:10, oct:-1 },
+  { g:'WARMTH', n:'TAPE WARBLE', h:'A TIRED OLD CASSETTE',
+    mode:'vcf', wave:'triangle', speed:44, depth:15, freq:45, reso:25, gain:15 },
+  { g:'WARMTH', n:'WOOL BLANKET', h:'MUFFLED AND COSY',
+    mode:'vcf', wave:'triangle', speed:30, depth:10, freq:35, reso:20, gain:20 },
+  { g:'WARMTH', n:'CAMPFIRE DRONE', h:'HOLD A FIFTH, DRIFT OFF',
+    wave:'triangle', speed:18, depth:20, bias:70, gain:25, oct:-1 },
+  { g:'WARMTH', n:'OLD VALVE RADIO', h:'AM BROADCAST, 1953',
+    mode:'vcf', wave:'sine', shape:'square', speed:25, depth:8, freq:39, reso:30, gain:30 },
+
+  /* Every trial from our build sessions, steps 2 through 4 */
+  { g:'BENCH TESTS', n:'GENTLE THROB', h:'STEP 2, TEST ONE',
+    wave:'triangle', speed:53, depth:33, bias:60, gain:5 },
+  { g:'BENCH TESTS', n:'HARD GATE', h:'THE STROBE CHOP',
+    shape:'square', speed:56, depth:100, bias:50, gain:10 },
+  { g:'BENCH TESTS', n:'RING-MOD SNARL', h:'HOLD A LOW NOTE',
+    shape:'square', speed:100, depth:100, bias:50, gain:40 },
+  { g:'BENCH TESTS', n:'SLOW AUTO-WAH', h:'WOW. WOW. WOW.',
+    mode:'vcf', speed:44, depth:50, freq:49, reso:66, gain:15 },
+  { g:'BENCH TESTS', n:'PURE FUZZ', h:'THE CLIPPING STAGE ALONE',
+    depth:0, gain:75 },
+  { g:'BENCH TESTS', n:'SINE DESTRUCTION', h:'NOW RIDE GAIN DOWN AND UP',
+    wave:'sine', depth:0, gain:100 },
+  { g:'BENCH TESTS', n:'SCREAM TEST', h:'THE RESONANCE HOWL',
+    mode:'vcf', speed:38, depth:66, freq:56, reso:100, gain:20 },
+  { g:'BENCH TESTS', n:'HELICOPTER BASS', h:'HOLD THREE LOW KEYS',
+    shape:'rampdown', speed:47, depth:70, gain:20, oct:-2, arp:true, pat:'updown', rate:60 },
+  { g:'BENCH TESTS', n:'INDUSTRIAL SEQUENCER', h:'LOW CLUSTER, LET IT RUN',
+    mode:'vcf', speed:30, depth:50, freq:49, reso:75, gain:30, oct:-1, arp:true, pat:'up', rate:80 },
+  { g:'BENCH TESTS', n:'BROKEN ROBOT', h:'FIGHTS ITS OWN RHYTHM',
+    shape:'square', speed:70, depth:80, bias:50, gain:66, arp:true, pat:'random', rate:86 },
+
+  /* The deep end */
+  { g:'MADNESS', n:'SICK BUILDING', h:'THE WALLS ARE BREATHING',
+    mode:'vcf', wave:'square', shape:'rampup', speed:65, depth:100, freq:39, reso:85, gain:50, oct:-1 },
+  { g:'MADNESS', n:'DENTIST DRILL', h:'SORRY.',
+    mode:'vcf', wave:'square', speed:90, depth:60, freq:78, reso:90, gain:60, oct:1 },
+  { g:'MADNESS', n:'POWER STATION', h:'MAINS HUM GONE WRONG',
+    wave:'sine', speed:89, depth:60, bias:55, gain:35, oct:-2 },
+  { g:'MADNESS', n:'AIR RAID', h:'ONE HELD NOTE = SIREN',
+    mode:'vcf', speed:15, depth:100, freq:65, reso:80, gain:40, oct:1 },
+  { g:'MADNESS', n:'GRISTLE CRAWL', h:'DRAGGING ITSELF TOWARD YOU',
+    shape:'rampup', speed:22, depth:90, bias:40, gain:80, oct:-2 },
+  { g:'MADNESS', n:'WASP FACTORY', h:'HOLD FOUR KEYS. RUN.',
+    shape:'square', speed:95, depth:90, bias:50, gain:70, oct:1, arp:true, pat:'random', rate:100 },
+  { g:'MADNESS', n:'DEATH RATTLE', h:'LAST BREATHS OF A MACHINE',
+    wave:'square', shape:'square', speed:68, depth:100, bias:30, gain:90, oct:-1 },
+  { g:'MADNESS', n:'CATHEDRAL OF RUST', h:'MINOR CHORD, PATIENCE',
+    mode:'vcf', wave:'triangle', shape:'rampdown', speed:35, depth:70, freq:28, reso:70, gain:45, oct:-1, arp:true, pat:'updown', rate:40 },
+  { g:'MADNESS', n:'MORSE FROM BEYOND', h:'TRANSMISSIONS, NOT MUSIC',
+    wave:'sine', shape:'square', speed:62, depth:100, bias:45, gain:30, oct:2, arp:true, pat:'random', rate:72 },
+  { g:'MADNESS', n:'THE VOID THROBS', h:'TEN-SECOND WAVES OF NOTHING',
+    shape:'rampdown', speed:9, depth:100, bias:45, gain:55, oct:-2 }
+];
+
+const presetSel = document.getElementById('presetSel');
+const presetHint = document.getElementById('presetHint');
+
+(function buildPresetMenu() {
+  let currentGroup = null;
+  let groupEl = null;
+  PRESETS.forEach((p, i) => {
+    if (p.g !== currentGroup) {
+      currentGroup = p.g;
+      groupEl = document.createElement('optgroup');
+      groupEl.label = '— ' + p.g + ' —';
+      presetSel.appendChild(groupEl);
+    }
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = p.n;
+    groupEl.appendChild(opt);
+  });
+})();
+
+function setSlider(el, v) {
+  el.value = v;
+  el.dispatchEvent(new Event('input'));
+}
+
+function applyPreset(p) {
+  const s = Object.assign({}, PRESET_DEFAULT, p);
+  // reuse the buttons' own click logic so every side-effect happens
+  document.querySelector('#waves button[data-wave="' + s.wave + '"]').click();
+  document.querySelector('#shapes button[data-shape="' + s.shape + '"]').click();
+  document.querySelector('#modes button[data-mode="' + s.mode + '"]').click();
+  document.querySelector('#arpPatterns button[data-pat="' + s.pat + '"]').click();
+  setSlider(speedSlider, s.speed);
+  setSlider(depthSlider, s.depth);
+  setSlider(biasSlider, s.bias);
+  setSlider(gainSlider, s.gain);
+  setSlider(freqSlider, s.freq);
+  setSlider(resoSlider, s.reso);
+  setSlider(arpRateSlider, s.rate);
+  setOctave(s.oct);
+  if (s.arp !== arpOn) setArp(s.arp);
+  presetHint.textContent = s.h || '';
+}
+
+presetSel.addEventListener('change', () => {
+  applyPreset(PRESETS[Number(presetSel.value)]);
+  presetSel.blur(); // give the QWERTY keys back to the synth
+});
+</script>
+</body>
+</html>
