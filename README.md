@@ -33,6 +33,4 @@ Download `Chiustleizer.html` and double-click it. That's the whole install.
 ## Credits
 
 Circuit lineage: **Roy Gwinn** (G.E.P., 1975) → **Chris Carter** (Gristleizer, 1977).
-This tribute built by **cltman**, with Claude Code at the soldering iron.
-
-🤖 Built with [Claude Code](https://claude.com/claude-code)
+This tribute built by **cltman**, with Claude.
